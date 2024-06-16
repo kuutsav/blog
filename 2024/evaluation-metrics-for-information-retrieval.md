@@ -14,11 +14,17 @@ It’s also not necessary to have just 1 document tagged as relevant for each qu
 
 Precision@k corresponds to the number of relevant documents among top k retrieved documents.
 
+<center>
 $\text{Precision@}k = \frac{\text{TP@}k}{\text{TP@}k + \text{FP@}k}$
+</center>
 
-![](../assets/2024/post_1_1.png)
+<center>
+<img src="../assets/2024/post_1_1.png" alt="MRR illustration">
+</center>
 
+<center>
 ​Fig. 1. Illustration of Precision@k for evaluating IR models.
+</center>
 
 Precision fails to take into account the ordering of the relevant documents. For example consider the models A and B (Fig 2) where model A outputs `[1,1,1,0,0]`(first 3 relevant) and model B outputs `[0,0,1,1,1]`(indices 3-5 relevant); both the models get the same score Precision@5=3/5.
 
