@@ -14,7 +14,8 @@ It’s also not necessary to have just 1 document tagged as relevant for each qu
 
 Precision@k corresponds to the number of relevant documents among top k retrieved documents.
 
-\text{Precision@}k = \frac{\text{TP@}k}{\text{TP@}k + \text{FP@}k}
+$\text{Precision@}k = \frac{\text{TP@}k}{\text{TP@}k + \text{FP@}k}$
+
 ​Fig. 1. Illustration of Precision@k for evaluating IR models.
 
 Precision fails to take into account the ordering of the relevant documents. For example consider the models A and B (Fig 2) where model A outputs [1,1,1,0,0](first 3 relevant) and model B outputs [0,0,1,1,1](indices 3-5 relevant); both the models get the same score Precision@5=3/5.
@@ -25,14 +26,9 @@ Average Precision(AP) evaluates whether all the relevant items selected by the m
 
 MAP squeezes complex evaluation into a single number. It’s essentially the mean of AP over all the queries.
 
-The formula for AP@k(q) is given by:
-\begin{equation}
-AP@k(q) = \frac{1}{|\text{rel}(q)|} \sum_{i=1}^{k} P(q)@i \cdot \text{rel}(q)_i
-\end{equation}
-The formula for MAP@k(Q) is given by:
-\begin{equation}
-MAP@k(Q) = \frac{1}{|Q|} \sum_{q \in Q} AP@k(q)
-\end{equation}
+AP@k(q) = $\frac{1}{|\text{rel}(q)|} \sum_{i=1}^{k} P(q)@i \cdot \text{rel}(q)_i$
+MAP@k(Q) = $\frac{1}{|Q|} \sum_{q \in Q} AP@k(q)$
+
 Where $|Q|$ is the number of queries, $P(q)@i$ is the precision of query $q$ after the first $i$ documents, $\text{rel}(q)_i$ is the binary relevance of the document at position $i$, and $|\text{rel}(q)|$ is the number of relevant documents.
 
 Fig. 2. Illustration of AveragePrecision@k for evaluating IR models.
