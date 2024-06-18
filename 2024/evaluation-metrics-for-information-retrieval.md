@@ -11,57 +11,47 @@ Labeled data is typically derived from manual annotations or click data, and a s
 
 ### Precision@k
 
-Precision@k corresponds to the number of relevant documents among top k retrieved documents.
+$Precision@k$ corresponds to the number of relevant documents among top k retrieved documents.
 
 <p align="center">
-$\text{Precision@}k = \frac{\text{TP@}k}{\text{TP@}k + \text{FP@}k}$
+$Precision@k = \frac{TP@k}{TP@k + FP@k}$
 </p>
 
 <p align="center">
-<img src="../assets/2024/post_1_1.png">
+<kbd><img src="../assets/2024/post_1_1.png" width="60%"></kbd>
+<sub>​Fig. 1. Illustration of Precision@k for evaluating IR models.</sub>
 </p>
 
-<p align="center">
-​Fig. 1. Illustration of Precision@k for evaluating IR models.
-</p>
-
-Precision fails to take into account the ordering of the relevant documents. For example consider the models A and B (Fig 2) where model A outputs `[1,1,1,0,0]`(first 3 relevant) and model B outputs `[0,0,1,1,1]`(indices 3-5 relevant); both the models get the same score Precision@5=3/5.
+Precision fails to take into account the ordering of the relevant documents. Consider models A and B (Fig 2) where model A outputs `[1,1,1,0,0]` and model B outputs `[0,0,1,1,1]` both the models get the same score $Precision@5=3/5$.
 
 ### MAP@k: Mean Average Precision
 
-Average Precision(AP) evaluates whether all the relevant items selected by the model are ranked higher or not. Every time we find a relevant document, we look at the full picture of what came before.
-
-MAP squeezes complex evaluation into a single number. It’s essentially the mean of AP over all the queries.
+$Average Precision (AP)$ evaluates whether all the relevant items selected by the model are ranked higher or not. Every time we find a relevant document, we look at the full picture of what came before. $MAP$ squeezes complex evaluation into a single number. It’s essentially the mean of $AP$ over all the queries.
 
 <p align="center">
-$AP@k(q) = \frac{\sum\limits_{i=1}^{k} P(q)@i \cdot \text{rel}(q)_i}{|\text{rel}(q)|}$
+$AP@k(q) = \frac{\sum\limits_{i=1}^{k} P(q)@i \cdot rel(q)_i}{|rel(q)|}$
 </p>
 
 <p align="center">
 $MAP@k(Q) = \frac{1}{|Q|} \sum_{q \in Q} AP@k(q)$
 </p>
 
-Where $|Q|$ is the number of queries, $P(q)@i$ is the precision of query $q$ after the first $i$ documents, $\text{rel}(q)_i$ is the binary relevance of the document at position $i$, and $|\text{rel}(q)|$ is the number of relevant documents.
+Where $|Q|$ is the number of queries, $P(q)@i$ is the precision of query $q$ after the first $i$ documents, $rel(q)_i$ is the binary relevance of the document at position $i$, and $|rel(q)|$ is the number of relevant documents.
 
 <p align="center">
-<img src="../assets/2024/post_1_2.png">
-</p>
-
-<p align="center">
-Fig. 2. Illustration of AveragePrecision@k for evaluating IR models.
+<kbd><img src="../assets/2024/post_1_2.png" width="60%"></kbd>
+<sub>Fig. 2. Illustration of AveragePrecision@k for evaluating IR models.</sub>
 </p>
 
 ### MRR: Mean Reciprocal Rank
 
-MRR puts focus on the first relevant document. It’s applicable when the system needs to return only the top matching document or the user only cares about the top result.
+$MRR$ puts focus on the first relevant document. It’s applicable when the system needs to return only the top matching document or the user only cares about the top result.
 
 <p align="center">
 $MRR(Q) = \frac{1}{|Q|} \sum_{q \in Q} \frac{1}{\text{FirstRank}(q)}$
 </p>
 
-Where ∣Q∣ is the number of queries and FirstRank(q) is the returns the rank of first relevant dcuments for 1 query.
-
-MRR(for 1 query) for different positions can be seen below. Notice the sharp fall in the values beyond the top few places.
+Where $|Q|$ is the number of queries and $FirstRank(q)$ is the returns the rank of first relevant dcuments for 1 query. $MRR$ (per query) for different positions can be seen below. Notice the sharp fall in the values beyond the top few places.
 
 ```python
 import math
@@ -76,40 +66,36 @@ plt.xticks(range(1, N+1, 1));
 ```
 
 <p align="center">
-<img src="../assets/2024/post_1_3.png">
+<kbd><img src="../assets/2024/post_1_3.png" width="80%"></kbd>
+<sub>Fig. 3. FirstRank for various indices.</sub>
 </p>
 
-Fig. 3. FirstRank for various indices.
-
-> Note that the metrics related to Recall are not used in general because it is easy to achieve a recall of 100% by returning all documents for a query.
+*Metrics related to Recall are not used in general because it is easy to achieve a recall of 100% by returning all documents for a query.*
 
 ## Graded labels
 
 ### nDCG@k: Normalized Discounted Cumulative Gain
 
-To understand nDCG, first let’s look at CG i.e. Cumulative Gain. We simply add up the relevance scores for top k documents returned for a query.
+To understand $nDCG$, let's first look at at $Cumulative Gain (CG)$. We add up the relevance scores for $top k$ documents returned for a query.
 
 <p align="center">
-$CG@k(q) = \sum\limits_{i=1}^{k} \text{rel}_i(q)$
+$CG@k(q) = \sum\limits_{i=1}^{k} rel_i(q)$
 </p>
 
 <p align="center">
-<img src="../assets/2024/post_1_4.png">
+<kbd><img src="../assets/2024/post_1_4.png" width="40%"></kbd>
+<sub>Fig. 3. Illustration of CumulativeGain@k for evaluating IR models.</sub>
 </p>
 
-<p align="center">
-Fig. 3. Illustration of CumulativeGain@k for evaluating IR models.
-</p>
+Note that $CG$ does not take into account the position of the document. For example consider the models A and B where model A outputs `[5,2,4,0,1]` and model B outputs `[2,0,5,1,4]`; both the models get the same score $CG@5=12$.
 
-Note that CG does not take into account the position of the document. For example consider the models A and B where model A outputs `[5,2,4,0,1]` and model B outputs `[2,0,5,1,4]`; both the models get the same score CG@5=12.
-
-DCG i.e. Discounted Cumulative Gain improves on CG by adding a discounting factor for each position.
+$DCG$ i.e. $Discounted Cumulative Gain$ improves on $CG$ by adding a discounting factor for each position.
 
 <p align="center">
 $DCG@k(q) = \sum\limits_{i=1}^{k} \frac{\log_2(i+1)}{rel(q)_i}$
 </p>
 
-here $\text{rel}(q)_i$ is the graded relevance of doc at position i.
+here $rel(q)_i$ is the graded relevance of doc at position $i$.
 
 ```python
 import math
@@ -119,8 +105,8 @@ import pandas as pd
 
 def dcg_df_from_scores(scores: List[int]) -> pd.DataFrame:
     cols = ["position(i)", "relevance(i)", "log2(i+1)", "relevance(i) / log2(i+1)"]
-
     data = []
+
     for i, score in enumerate(scores):
         position = i + 1
         data.append((position, score, math.log2(position+1), score / math.log2(position+1)))
@@ -129,7 +115,7 @@ def dcg_df_from_scores(scores: List[int]) -> pd.DataFrame:
 
 
 def dcg_at_k(scores: List[int]) -> pd.DataFrame:
-    df = dcg_df_from_scores(scores)
+    dcg_df = dcg_df_from_scores(scores)
     dcg_so_far = ""
 
     for i, dcg in enumerate(df["relevance(i) / log2(i+1)"]):
@@ -139,7 +125,7 @@ def dcg_at_k(scores: List[int]) -> pd.DataFrame:
             dcg_so_far = f"{dcg_so_far} + {dcg:2.2f}"
         print(f"DCG@{i+1} = {dcg_so_far:<32} = {eval(dcg_so_far):2.2f}")
     
-    return df
+    return dcg_df
 ```
 
 Now we can compare the results from the two models A and B we mentioned earlier.
@@ -182,7 +168,7 @@ get_dcg_at_k([2, 0, 5, 1, 4])  # model B
 | 4   | 5           | 4            | 2.584963  | 1.547411                 |
 
 
-DCG solves the problem with CG but it also has a drawback, it can’t be used to compare queries/models that return different number of results. For example consider query A and B where query A returns `[5,2,4]` query B returns `[5,2,4,0,1]`;
+$DCG$ solves the problem with $CG$ but it also has a drawback, it can’t be used to compare queries/models that return different number of results. For example consider query A and B where query A returns `[5,2,4]` query B returns `[5,2,4,0,1]`;
 
 ```python
 get_dcg_at_k([5, 2, 4])  # query A
@@ -216,15 +202,13 @@ get_dcg_at_k([5, 2, 4, 0, 1])  # query B
 | 3              | 0            | 2.321928  | 0.000000                  |
 | 4              | 1            | 2.584963  | 0.386853                  |
 
-Query B got higher DCG because it returned 5 documents whereas query A only returned 3. We can’t say that query B was better than query A. nDCG fixes this issue by adding a normalization factor on top of DCG.
+Query B got higher $DCG$ because it returned 5 documents whereas query A only returned 3. We can’t say that query B was better than query A. $nDCG$ fixes this issue by adding a normalization factor on top of $DCG$.
 
 <p align="center">
-$\text{nDCG@k}(Q) = \frac{1}{|Q|} \sum_{q \in Q} \frac{\text{DCG@k}(\text{sorted}(\text{rel}(q)))}{\text{DCG@k}(q)}$
+$nDCG@k(Q) = \frac{1}{|Q|} \sum_{q \in Q} \frac{DCG@k(sorted(rel(q)))}{DCG@k(q)}$
 </p>
 
-Where ∣Q∣ is the number of queries.
-
-The normalization factor 𝐷𝐶𝐺@𝑘(𝑠𝑜𝑟𝑡𝑒𝑑(𝑟𝑒𝑙(𝑞))) is the Ideal DCG@k. This is calculated by sorting the graded relevance scores returned for a query and then calculating the DCG@k. nDCG@k always lie between 0 and 1.
+Where $|Q|$ is the number of queries. The normalization factor $DCG@k(sorted(rel(q)))$ is the Ideal $DCG@k$. This is calculated by sorting the graded relevance scores returned for a query and then calculating the $DCG@k$. $nDCG@k$ always lie between 0 and 1.
 
 Now we can compare queries/models with different number of results.
 
@@ -243,7 +227,7 @@ get_dcg_at_k(sorted([5, 2, 4], reverse=True))  # Ideal DCG@k for query A
 | 2              | 3            | 2.000000  | 2.523719                  |
 | 3              | 4            | 1.584963  | 2.523719                  |
 
-nDCG@3 for query A = 8.26 / 8.52 = 0.9694
+$nDCG@3$ for query A = 8.26 / 8.52 = 0.9694
 
 ```python
 get_dcg_at_k(sorted([5, 2, 4, 0, 1], reverse=True))  # Ideal DCG@k for query B
@@ -263,7 +247,7 @@ get_dcg_at_k(sorted([5, 2, 4, 0, 1], reverse=True))  # Ideal DCG@k for query B
 | 3              | 1            | 2.321928  | 0.430677                 |
 | 4              | 0            | 2.584963  | 0.000000                 |
 
-nDCG@5 for query B = 8.65 / 8.95 = 0.9664
+$nDCG@5$ for query B = 8.65 / 8.95 = 0.9664
 
 ## References
 
