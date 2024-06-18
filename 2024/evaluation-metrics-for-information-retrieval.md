@@ -1,6 +1,6 @@
 # Evaluation Metrics for Information Retrieval
 
-Author: Kumar Utsav<br>
+Author: Kumar Utsav ([@kuutsav](https://github.com/kuutsav))<br>
 Date: June 18, 2024
 
 This document focuses exclusively on offline evaluation metrics for Information Retrieval (IR) systems, setting aside online evaluation methods such as click-through rates or A/B testing. Offline evaluation allows for the quantitative comparison of multiple IR models using labeled datasets, which map queries to relevant documents. These documents can be graded on a relevance scale (e.g., 0-5) or simply marked as relevant/non-relevant (binary).
@@ -227,7 +227,7 @@ get_dcg_at_k(sorted([5, 2, 4], reverse=True))  # Ideal DCG@k for query A
 | 2              | 3            | 2.000000  | 2.523719                  |
 | 3              | 4            | 1.584963  | 2.523719                  |
 
-$nDCG@3$ for query A = 8.26 / 8.52 = 0.9694
+$nDCG@3$ for query $A = 8.26/8.52 = 0.9694$
 
 ```python
 get_dcg_at_k(sorted([5, 2, 4, 0, 1], reverse=True))  # Ideal DCG@k for query B
@@ -247,9 +247,9 @@ get_dcg_at_k(sorted([5, 2, 4, 0, 1], reverse=True))  # Ideal DCG@k for query B
 | 3              | 1            | 2.321928  | 0.430677                 |
 | 4              | 0            | 2.584963  | 0.000000                 |
 
-$nDCG@5$ for query B = 8.65 / 8.95 = 0.9664
+$nDCG@5$ for query $B = 8.65/8.95 = 0.9664$
 
 ## References
 
-- Sebastian Hofstätter: “Advanced Information Retrieval 2021 @ TU Wien”
-- Amit Chaudhary: https://amitness.com/2020/08/information-retrieval-evaluation
+1. Sebastian Hofstätter. *“Advanced Information Retrieval 2021 @ TU Wien"*
+2. Amit Chaudhary. *https://amitness.com/2020/08/information-retrieval-evaluation*
