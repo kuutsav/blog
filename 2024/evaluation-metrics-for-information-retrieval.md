@@ -1,12 +1,11 @@
-Here we are only going to look at offline evaluation metrics. We won’t cover online evaluation techniques like click-through rate or running A/B tests where a subset of users are presented results from a newer test system.
+# Evaluation Metrics for Information Retrieval
 
-## Offline evaluation
+Author: Kumar Utsav<br>
+Date: June 18, 2024
 
-The idea behind these evaluations is to quantitatively compare multiple IR models. Typically we have a labeled dataset where we have queries mapped to relevant documents. The documents could either be graded or non-graded(binary). For example, a graded relevance score could be on a scale of 0-5 with 5 being the most relevant.
+This document focuses exclusively on offline evaluation metrics for Information Retrieval (IR) systems, setting aside online evaluation methods such as click-through rates or A/B testing. Offline evaluation allows for the quantitative comparison of multiple IR models using labeled datasets, which map queries to relevant documents. These documents can be graded on a relevance scale (e.g., 0-5) or simply marked as relevant/non-relevant (binary).
 
-Labeled data typically comes form manual annotations or click data.
-
-It’s also not necessary to have just 1 document tagged as relevant for each query. TREC collections have 100s of documents tagged as relevant per query. On the other hand MSMARCO has ~1 document tagged as relevant per query. This tends to be quite noisy but easy to scale hence more variability in the queries.
+Labeled data is typically derived from manual annotations or click data, and a single query can be associated with multiple relevant documents, as seen in TREC collections or the MSMARCO dataset, which presents its own set of challenges and benefits.
 
 ## Binary labels
 
@@ -35,7 +34,7 @@ Average Precision(AP) evaluates whether all the relevant items selected by the m
 MAP squeezes complex evaluation into a single number. It’s essentially the mean of AP over all the queries.
 
 <p align="center">
-$AP@k(q) = \frac{1}{|\text{rel}(q)|} \sum_{i=1}^{k} P(q)@i \cdot \text{rel}(q)_i$
+$AP@k(q) = \frac{\sum\limits_{i=1}^{k} P(q)@i \cdot \text{rel}(q)_i}{|\text{rel}(q)|}$
 </p>
 
 <p align="center">
@@ -66,12 +65,9 @@ MRR(for 1 query) for different positions can be seen below. Notice the sharp fal
 
 ```python
 import math
-
 import matplotlib.pyplot as plt
 %matplotlib inline
-```
 
-```python
 N = 20
 plt.figure(figsize=(16, 5));
 plt.plot(range(1, N+1), [1/n for n in range(1, N+1)], c="b", label="1/x");
@@ -94,7 +90,7 @@ Fig. 3. FirstRank for various indices.
 To understand nDCG, first let’s look at CG i.e. Cumulative Gain. We simply add up the relevance scores for top k documents returned for a query.
 
 <p align="center">
-$CG@k(q) = \sum_{i=1}^{k} \text{rel}_i(q)$
+$CG@k(q) = \sum\limits_{i=1}^{k} \text{rel}_i(q)$
 </p>
 
 <p align="center">
@@ -110,7 +106,7 @@ Note that CG does not take into account the position of the document. For exampl
 DCG i.e. Discounted Cumulative Gain improves on CG by adding a discounting factor for each position.
 
 <p align="center">
-$DCG@k(q) = \sum_{i=1}^{k} \frac{\log_2(i+1)}{rel(q)_i}$
+$DCG@k(q) = \sum\limits_{i=1}^{k} \frac{\log_2(i+1)}{rel(q)_i}$
 </p>
 
 here $\text{rel}(q)_i$ is the graded relevance of doc at position i.
@@ -118,11 +114,10 @@ here $\text{rel}(q)_i$ is the graded relevance of doc at position i.
 ```python
 import math
 from typing import List
-
 import pandas as pd
 
 
-def _get_dcg_at_k(scores: List[int]) -> pd.DataFrame:
+def dcg_df_from_scores(scores: List[int]) -> pd.DataFrame:
     cols = ["position(i)", "relevance(i)", "log2(i+1)", "relevance(i) / log2(i+1)"]
 
     data = []
@@ -133,10 +128,10 @@ def _get_dcg_at_k(scores: List[int]) -> pd.DataFrame:
     return pd.DataFrame(data, columns=cols)
 
 
-def get_dcg_at_k(scores: List[int]) -> None:
-    df = _get_dcg_at_k(scores)
-    
+def dcg_at_k(scores: List[int]) -> pd.DataFrame:
+    df = dcg_df_from_scores(scores)
     dcg_so_far = ""
+
     for i, dcg in enumerate(df["relevance(i) / log2(i+1)"]):
         if not dcg_so_far:
             dcg_so_far = f"{dcg:2.2f}"
@@ -272,6 +267,5 @@ nDCG@5 for query B = 8.65 / 8.95 = 0.9664
 
 ## References
 
-[1] Sebastian Hofstätter - “Advanced Information Retrieval 2021 @ TU Wien”
-
-[2] Amit Chaudhary - https://amitness.com/2020/08/information-retrieval-evaluation
+- Sebastian Hofstätter: “Advanced Information Retrieval 2021 @ TU Wien”
+- Amit Chaudhary: https://amitness.com/2020/08/information-retrieval-evaluation
